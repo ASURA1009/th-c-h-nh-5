@@ -1,52 +1,292 @@
-# Prerequisites
-*.d
+#include <stdio.h>
+#include <string.h> 
+#define MAX 100
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+// Dinh nghia du lieu ngay-thang-nam 
+typedef struct date
+{
+	unsigned char ngay;
+	unsigned char thang;
+	int nam;
+}Date;
+// Dinh nghia du lieu sinh vien
+typedef struct Sinhvien
+{
+	char ma[11];
+	char hoten[31];
+	Date ns;	// Khai bao du lieu ngay sinh cua sinh vien
+	char gt;	// Gioi tinh luu dai dien cho x: nam; y: nu	
+				// Hoac int gioi tinh; //1: nam; 0: nu
+	char lop[10];
+	float dtb;
+}SV;
+// Khai bao nguyen mau ham dung trong chuong trinh 
+void nhapNS(Date &d);
+void xuatNS(Date d);
+void nhap1SV(SV &x);
+void xuat1SV(SV x);
+void nhapSL(int &n);
+void nhapDSSV(SV a[],int n);
+void xuatDSSV(SV a[],int n);
 
-# Linker output
-*.ilk
-*.map
-*.exp
 
-# Precompiled Headers
-*.gch
-*.pch
+void nhapNS(Date &d)
+{
+	printf("\nNhap ngay/thang/nam: ");
+	scanf("%u%u%d", &d.ngay, &d.thang, &d.nam);
+}
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+void xuatNS(Date d)
+{
+	printf("%02d-%02d-%4d", d.ngay, d.thang, d.nam);
+}
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+void nhap1SV(SV &x)
+{
+	printf("\nNhap ma sinh vien: ");scanf("%s", &x.ma);
+	fflush(stdin);printf("\nNhap ho ten: ");gets(x.hoten);
+	nhapNS(x.ns);
+	printf("\nNhap lop: ");scanf("%s", &x.lop);
+	
+	do
+	{
+		fflush(stdin);
+		printf("\nNhap gioi tinh x-nam, y-nu: ");
+		scanf("%c", &x.gt); 
+	}
+	while (x.gt != 'x' && x.gt != 'y' && x.gt != 'X' && x.gt != 'Y');	// Hang ki tu cu the phai dat trong '..' 
+	
+	printf("\nNhap diem trung binh: ");scanf("%f", &x.dtb);
+}
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+void xuat1SV(SV x)	//Xuat thong tin cua 1 sinh vien ra man hinh
+{
+	printf("%-11s\t%-30s\t", x.ma, x.hoten);
+	if ( x.gt == 'x') 	printf("nam\t");
+	else 	printf("nu\t");
+	xuatNS(x.ns);
+	printf("\t%-8s\t%.1f\n", x.lop, x.dtb);
+}
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+void nhapSL(int &n)
+{
+	do
+	{
+		printf("\nNhap so luong n: ");scanf("%d", &n);
+		if(n < 0)	printf("\nVui long nhap lai n!");
+	}
+	while (n < 0);
+}
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+void nhapDSSV(SV a[],int n)
+{
+	for (int i=0; i<n; i++)
+	{
+		printf("\n\tNhap sinh vien thu %d:\n",i+1);
+		nhap1SV(a[i]);	// Goi ham nhap cho 1 sinh vien thu i trong danh sach
+	}
+}
+
+void xuatDSSV(SV a[],int n)
+{
+	for (int i=0; i<n; i++)
+	xuat1SV(a[i]);	//Goi ham thong tin cho 1 sinh vien thu i trong danh sach 
+}
+// Xuat sinh vien co diem trung binh > 5
+void xuatDTB(SV a[],int n)
+{
+	for (int i=0; i<n; i++)
+	{
+		if(a[i].dtb > 5)	xuat1SV(a[i]); 
+	}
+}
+ 
+int  timSVthang12(Date b[],int n)
+{
+	for (int i=1; i<n; i++)
+	{
+		if(b[i].thang == 12) 
+		return 1; 
+	} 
+	return 0; 
+ } 
+
+void xuatSVthang12(SV a[],int n)
+{
+	Date b[MAX]; 
+	int vt12 = timSVthang12(b,n); 
+	 printf("\nDanh sach sinh vien sinh nhat thang 12:\n");
+	
+	for (int i=0; i<n; i++)
+	{
+			if(vt12 == 1)
+		{
+			xuat1SV(a[i]);
+		} 
+	} 
+ } 
+
+void xuatSVnganh(SV a[],int n)
+{
+	for (int i=0; i<n; i++)
+	{
+		if((a[i].lop[4] == 'i' && a[i].lop[5] == 't') || (a[i].lop[4] == 'I' && a[i].lop[5] == 'T'))
+		xuat1SV(a[i]); 
+	 } 
+ } 
+ 
+int DemSVnu(SV a[],int n)
+{
+	int c=0; 
+	for (int i=0; i<n; i++)
+	{
+		if(a[i].gt == 'y' || a[i].gt == 'Y')	c+=1; 
+	} 
+	return c; 
+ } 
+ 
+ float dtbmax(SV a[],int n)
+ {
+ 	float max = a[0].dtb;
+	for (int i=1; i<n; i++)
+	{
+		if(a[i].dtb > max)	max = a[i].dtb; 
+	} 
+	return max; 
+  } 
+  
+void xuatSVdtbMAX(SV a[],int n)
+{
+	float max = dtbmax(a,n);
+	for (int i=0; i<n; i++)
+	{
+		if(a[i].dtb == max)	xuat1SV(a[i]);
+	} 
+} 
+ 
+void themSVcuoids(SV a[],int &n)
+{
+	printf("\nNhap sinh vien can them:\n"); 
+ 	nhap1SV(a[n]); 
+	
+	n++;
+}  
+
+int timSV(SV a[],int n,char X[])
+{
+	for (int i=0; i<n; i++)
+	{
+		if(stricmp(a[i].ma,X) == 0)
+		return i;
+	} 
+	return -1;
+}
+
+void xuatSVvasua(SV a[],int n,char X[],SV &x)
+{ 
+	int vt = timSV(a,n,X);
+	
+	for (int i=0; i<n; i++)
+	{
+		if (vt == -1)
+		{
+			printf("\nKhong tim thay sinh vien!\n"); 
+		}
+		else
+		{
+			printf("\nNhap lai thong tin sinh vien can sua:\n");
+			nhap1SV(a[i]); 
+		} 
+		xuat1SV(a[i]); 
+	}
+} 
+void xoaSV(SV a[],int &n,int vt)
+{
+	for (int i=vt; i<n-1; i++)
+	{
+		a[i] = a[i+1];
+	}
+	n--; 
+ } 
+
+void Sapxeptangdan(SV a[],int n)
+{
+	for (int i=0; i<n-1;i++)
+	{
+		for (int j=i+1; j<n; j++)
+		{
+			if(a[i].dtb > a[j].dtb)
+			{
+			SV tam; 
+			tam = a[i];
+			a[i] = a[j];
+			a[j] = tam;
+			} 
+		 } 
+	 } 
+ } 
+// Ham chinh cua chuong trinh
+int main()
+{
+	int n;	// n luu so luong sinh vien cua danh sach
+	SV a[MAX];	// Khai bao mang a gom toi da sinh vien
+	SV x; 
+	
+	nhapSL(n);	// Nhap so luong sinh vien 
+	printf("\n---------------NHAP DANH SACH SINH VIEN---------------\n");
+	nhapDSSV(a,n);	// Nhap danh sach 
+	printf("\n--------------------------------\n");
+	printf("\n---------------DANH SACH SINH VIEN-----------------\n");
+	xuatDSSV(a,n);	// Xuat danh sach
+	
+	printf("\nDanh sach sinh vien dtb tren 5:\n"); 
+	xuatDTB(a,n); 
+	
+//	int vt12 = timSVthang12(b,n); 
+//	if(vt12 == -1)
+//	{
+//		printf("\nKhong co sinh vien sinh nhat thang 12!"); 
+//	 } 
+//	else 
+//	{
+//		printf("\nDanh sach sinh vien sinh nhat thang 12:\n");
+//		xuatDSSV(a,n);
+//	 } 
+	xuatSVthang12(a,n); 
+	
+	printf("\nDanh sach sinh vien hoc cong nghe thong tin:\n");
+	xuatSVnganh(a,n); 
+	printf("\nSinh vien co diem trung binh cao nhat:\n");
+	xuatSVdtbMAX(a,n); 
+	printf("\nSo luong sinh vien nu: %d", DemSVnu(a,n));
+	themSVcuoids(a,n); 
+	printf("\nSinh vien vua them vao cuoi danh sach:\n");
+	xuatDSSV(a,n); 
+	
+	char X[11]; 
+	
+	printf("\nNhap ma sinh vien can tim:\n");
+	fflush(stdin);
+	gets(X); 
+	xuatSVvasua(a,n,X,x); 
+	
+	printf("\nNhap ma sinh vien can xoa:\n");
+	fflush(stdin);
+	gets(X);
+	int vt = timSV(a,n,X);
+	if(vt == -1)
+	{
+		printf("\nKhong tim thay sinh vien!");
+	}
+	else
+	{
+		xoaSV(a,n,vt);
+		xuatDSSV(a,n);
+	}
+	
+	printf("\nDanh sach sinh vien sau khi sap xep:\n");
+	Sapxeptangdan(a,n);
+	xuatDSSV(a,n);
+	
+	return 0;
+}
